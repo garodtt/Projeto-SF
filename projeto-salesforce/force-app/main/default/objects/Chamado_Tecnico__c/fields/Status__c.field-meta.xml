@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <label>Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Aberto</fullName>
+                <default>true</default>
+                <label>Aberto</label>
+            </value>
+            <value>
+                <fullName>Em Atendimento</fullName>
+                <default>false</default>
+                <label>Em Atendimento</label>
+            </value>
+            <value>
+                <fullName>Aguardadndo Peca</fullName>
+                <default>false</default>
+                <label>Aguardadndo Peca</label>
+            </value>
+            <value>
+                <fullName>Resolvido</fullName>
+                <default>false</default>
+                <label>Resolvido</label>
+            </value>
+            <value>
+                <fullName>Fechado</fullName>
+                <default>false</default>
+                <label>Fechado</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

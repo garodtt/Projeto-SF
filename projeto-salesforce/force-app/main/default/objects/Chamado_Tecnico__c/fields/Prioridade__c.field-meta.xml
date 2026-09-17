@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Prioridade__c</fullName>
+    <label>Prioridade</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Baixa</fullName>
+                <default>false</default>
+                <label>Baixa</label>
+            </value>
+            <value>
+                <fullName>Media</fullName>
+                <default>false</default>
+                <label>Media</label>
+            </value>
+            <value>
+                <fullName>Alta</fullName>
+                <default>false</default>
+                <label>Alta</label>
+            </value>
+            <value>
+                <fullName>Urgente</fullName>
+                <default>false</default>
+                <label>Urgente</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
