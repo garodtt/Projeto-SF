@@ -1,58 +1,154 @@
-# Salesforce DX Project
+# FixFlow — Gestão Inteligente de Manutenção e Suporte Técnico
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+Projeto de portfólio Salesforce simulando um sistema real de gestão de manutenção técnica: clientes com contratos de manutenção, equipamentos instalados e abertura de chamados técnicos com cálculo automático de SLA.
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+Construído em uma Trailhead Playground, com todo o código versionado via Salesforce CLI (SFDX).
 
-## Prerequisites
+---
 
-Before you start, make sure you have:
+## 🎯 Objetivo do Projeto
 
-- **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
-- **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
-- **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
+Simular um cenário de negócio completo (empresa de manutenção de equipamentos) para demonstrar, de forma prática, o uso de:
 
-## Project Structure
+- Modelagem de dados relacional no Salesforce
+- Automação declarativa com Flow Builder (Record-Triggered e Screen Flow)
+- Apex (em construção)
+- Integração com GitHub via SFDX
+- Boas práticas de documentação e versionamento
 
-Your DX project follows this structure:
+---
 
-- **`force-app/main/default/`** - Your metadata source files live in this default package directory. You can configure additional package directories in the `sfdx-project.json` file.
-- **`config/`** - Scratch org definitions and project settings
-- **`scripts/`** - Automation scripts for common tasks
-- **`sfdx-project.json`** - Project manifest that defines package directories, namespace, API version, and other project-level settings
+## 🗂️ Modelo de Dados
 
-See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm).
+```
+Account (padrão do Salesforce)
+   │
+   ├── Contrato_de_Manutencao__c
+   │      ├── Data_de_Inicio__c
+   │      ├── Data_de_Fim__c
+   │      ├── Status__c (Ativo / Vencido / Cancelado)
+   │      ├── Valor_Mensal__c
+   │      └── Conta__c (Lookup → Account)
+   │
+   └── Equipamento__c
+          ├── Numero_Serie__c
+          ├── Tipo_Equipamento__c (Ar-Condicionado / Elevador / Maquina Industrial)
+          ├── Data_Instalacao__c
+          ├── Conta__c (Lookup → Account)
+          │
+          └── Chamado_Tecnico__c
+                 ├── Equipamento__c (Lookup → Equipamento__c)
+                 ├── Descricao_do_Problema__c
+                 ├── Prioridade__c (Baixa / Media / Alta / Urgente)
+                 ├── Status__c (Aberto / Em Atendimento / Aguardando Peca / Resolvido / Fechado)
+                 ├── Data_de_Abertura__c
+                 └── SLA_Vencimento__c
+```
 
-## Get Started
+---
 
-Ready to start developing? The [Get Started with Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_get_started_dx.htm) guide walks you through your first project, from creating a scratch org to creating a simple Apex class or LWC to deploying your code to a sandbox.
+## ⚙️ Automações (Flow Builder)
 
-## Common Salesforce CLI Commands
+### 1. Calcular SLA do Chamado (Record-Triggered Flow)
 
-Here are common CLI commands that you'll use the most:
+**Objetivo**: sempre que um novo Chamado Técnico é criado, o sistema calcula automaticamente a data/hora limite de atendimento (SLA), com base na prioridade — sem nenhuma ação manual.
 
-- `sf org login web`: Authorize an org
-- `sf org open`: Open your org in a browser
-- `sf org create scratch`: Create a scratch org
-- `sf project deploy start`: Deploy metadata to your org
-- `sf project retrieve start`: Retrieve metadata from your org
-- `sf template generate <artifact>`: Scaffold new components, such as Apex classes and triggers, LWC components, Lightning apps, and more
-- `sf apex <command>`: Run Apex tests, run anonymous Apex blocks, and view logs
-- `sf data <command>`: Work with test data
-- `sf alias <command>`: Manage org aliases
-- `sf config <command>`: Configure CLI settings
+| Prioridade | SLA calculado |
+|---|---|
+| Urgente | Data/hora atual + 4 horas |
+| Alta | Data/hora atual + 8 horas |
+| Media | Data/hora atual + 24 horas |
+| Baixa (default) | Data/hora atual + 72 horas |
 
-## Use Agentforce Vibes to Build Lightning Apps
+Também preenche automaticamente o campo `Data_de_Abertura__c` no momento da criação do registro.
 
-Transform your ideas into custom Lightning apps that extend CRM workflows directly in Lightning Experience. Through natural conversations with Agentforce Vibes, implement custom objects and fields, complex business logic, and dynamic UI components. See [Build a Lightning App Using Agentforce Vibes](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/lexapp-overview.html).
+**Estrutura**:
+```
+Start (Record-Triggered: Chamado_Tecnico__c criado)
+  └── Preencher Data Abertura (Update Triggering Record)
+        └── Decision: Verificar Prioridade
+              ├── Urgente → SLA +4h
+              ├── Alta → SLA +8h
+              ├── Media → SLA +24h
+              └── Baixa (default) → SLA +72h
+```
 
-## Additional Resources
+### 2. Abrir Chamado Tecnico (Screen Flow)
 
-- [Agentforce Vibes Developer Guide](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-overview.html)
-- [Salesforce CLI Installation Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
-- [Salesforce CLI Plugin Development Guide](https://developer.salesforce.com/docs/platform/salesforce-cli-plugin/guide/conceptual-overview.html)
-- [Salesforce VS Code Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
+**Objetivo**: interface simples para o cliente (ou atendente) abrir um chamado técnico, selecionando o equipamento com problema, descrevendo a ocorrência e definindo a prioridade.
 
+**Estrutura**:
+```
+Start
+  └── Buscar Equipamentos (Get Records: todos os Equipamento__c)
+        └── Screen: Abrir Chamado Tecnico
+              ├── Selecione o Equipamento (Picklist + Record Choice Set)
+              ├── Descreva o Problema (Long Text Area)
+              └── Prioridade (Picklist estático)
+        └── Criar Chamado Tecnico (Create Records)
+```
+
+Ao finalizar, o Chamado Técnico é criado com `Status__c = "Aberto"`, o que dispara automaticamente o Flow **Calcular SLA do Chamado** (automação encadeada).
+
+---
+
+## 🔧 Decisão técnica: por que Record Choice Set em vez de Lookup
+
+Durante a construção do Screen Flow, o componente padrão **Lookup** apresentou instabilidade na Trailhead Playground utilizada: mesmo configurado corretamente (Object API Name e Field API Name válidos), a busca de registros não retornava resultados de forma consistente, mesmo com os registros existindo e sendo encontrados normalmente pela busca global do Salesforce.
+
+**Solução adotada**: substituição do componente Lookup por um **Picklist alimentado por um Record Choice Set**, construído a partir de um elemento **Get Records** que busca todos os equipamentos antecipadamente. Essa abordagem se mostrou mais estável neste ambiente.
+
+**Trade-off identificado**: essa solução funciona bem para volumes pequenos/médios de registros. Em um cenário de produção com um volume muito grande de equipamentos, a abordagem recomendada seria investigar a causa raiz da instabilidade do Lookup (permissões, índice de busca) ou utilizar um componente Lightning Web Component (LWC) customizado com busca server-side.
+
+---
+
+## 🚀 Como usar este projeto
+
+### Pré-requisitos
+- [Salesforce CLI](https://developer.salesforce.com/tools/salesforcecli)
+- Uma org Salesforce (Trailhead Playground, Developer Edition ou Sandbox)
+
+### Passos
+
+```bash
+# Clonar o repositório
+git clone https://github.com/garodtt/Projeto-SF.git
+cd Projeto-SF/projeto-salesforce
+
+# Autenticar na sua org
+sf org login web --alias minha-org --set-default
+
+# Fazer deploy do projeto
+sf project deploy start
+```
+
+---
+
+## 📌 Roadmap do Projeto
+
+- [x] Modelagem de dados (Equipamento, Contrato de Manutenção, Chamado Técnico)
+- [x] Flow: cálculo automático de SLA
+- [x] Flow: abertura de chamado via tela (Screen Flow)
+- [ ] Apex: Trigger com handler pattern
+- [ ] Apex: Batch + Schedulable para chamados preventivos
+- [ ] Apex: integração via callout externo
+- [ ] Testes unitários (Apex)
+- [ ] Agentforce: assistente virtual para consulta de status de chamados
+- [ ] CI/CD com GitHub Actions
+- [ ] Experience Cloud (portal do cliente)
+
+---
+
+## 🛠️ Stack Técnica
+
+- Salesforce Platform (Flow Builder, Apex — em construção)
+- Salesforce CLI (SFDX)
+- Git / GitHub
+- VS Code + Salesforce Extension Pack
+
+---
+
+## 👤 Autor
+
+Vinicius Dias
+Projeto desenvolvido para fins de portfólio profissional em Salesforce.
