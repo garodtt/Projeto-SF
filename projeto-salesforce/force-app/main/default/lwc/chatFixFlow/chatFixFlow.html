@@ -1,0 +1,38 @@
+<template>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span class="chat-title">Matias - Assistente FixFlow</span>
+        </div>
+
+        <div class="chat-body">
+            <p class="chat-intro">
+                Olá! Sou o Matias. Informe o número do seu chamado técnico (ex: CH-0001) para consultar o status.
+            </p>
+
+            <lightning-input
+                label="Número do Chamado"
+                value={numeroDoChamado}
+                onchange={handleInputChange}
+            ></lightning-input>
+
+            <lightning-button
+                label="Consultar"
+                variant="brand"
+                onclick={handleConsultarClick}
+                class="botao-consultar"
+            ></lightning-button>
+
+            <template if:true={mostrarFlow}>
+                <lightning-flow
+                    flow-api-name="Consultar_Status_Do_Chamado"
+                    flow-input-variables={variaveisDeEntrada}
+                    onstatuschange={handleFlowStatusChange}
+                ></lightning-flow>
+            </template>
+
+            <template if:true={mensagemResposta}>
+                <p class="chat-resposta">{mensagemResposta}</p>
+            </template>
+        </div>
+    </div>
+</template>
