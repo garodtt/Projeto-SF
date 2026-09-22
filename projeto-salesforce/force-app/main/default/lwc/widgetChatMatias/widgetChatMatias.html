@@ -1,0 +1,56 @@
+<template>
+    <div class="widget-container">
+
+        <template if:false={chatAberto}>
+            <button class="botao-flutuante" onclick={handleAbrirChat} title="Falar com o Matias">
+                <lightning-icon icon-name="utility:chat" size="medium" variant="inverse"></lightning-icon>
+            </button>
+        </template>
+
+        <template if:true={chatAberto}>
+            <div class="janela-do-chat">
+
+                <div class="cabecalho-do-chat">
+                    <span class="titulo-do-chat">Matias - Assistente FixFlow</span>
+                    <button class="botao-fechar" onclick={handleFecharChat} title="Fechar">✕</button>
+                </div>
+
+                <div class="corpo-do-chat" data-id="corpo-do-chat">
+                    <template for:each={mensagens} for:item="mensagem">
+                        <div key={mensagem.id} class={mensagem.classeDaBolha}>
+                            <div class="texto-da-bolha">{mensagem.texto}</div>
+                        </div>
+                    </template>
+
+                    <template if:true={estaConsultando}>
+                        <div class="bolha-do-bot">
+                            <div class="texto-da-bolha">
+                                <lightning-spinner alternative-text="Consultando" size="x-small"></lightning-spinner>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="rodape-do-chat">
+                    <lightning-input
+                        type="text"
+                        variant="label-hidden"
+                        placeholder="Digite o número do chamado..."
+                        value={textoDigitado}
+                        onchange={handleMudancaNoTexto}
+                        onkeyup={handleTeclaPressionada}
+                        class="campo-de-texto"
+                    ></lightning-input>
+                    <lightning-button-icon
+                        icon-name="utility:send"
+                        variant="brand"
+                        onclick={handleEnviarMensagem}
+                        alternative-text="Enviar"
+                    ></lightning-button-icon>
+                </div>
+
+            </div>
+        </template>
+
+    </div>
+</template>
