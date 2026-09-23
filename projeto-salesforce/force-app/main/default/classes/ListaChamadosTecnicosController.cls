@@ -36,4 +36,12 @@ public with sharing class ListaChamadosTecnicosController {
         String termoDeBuscaFormatado = '%' + termoDeBusca + '%';
         return [SELECT COUNT() FROM Chamado_Tecnico__c WHERE Name LIKE :termoDeBuscaFormatado];
     }
+        @AuraEnabled
+    public static void atualizarStatusDoChamado(Id idDoChamado, String novoStatus) {
+        Chamado_Tecnico__c chamado = new Chamado_Tecnico__c(
+            Id = idDoChamado,
+            Status__c = novoStatus
+        );
+        update chamado;
+    }
 }

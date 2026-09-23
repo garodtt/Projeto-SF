@@ -35,12 +35,14 @@
                                 <th scope="col">Status</th>
                                 <th scope="col">Prioridade</th>
                                 <th scope="col">Data de Abertura</th>
+                                <th scope="col">SLA</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <template for:each={chamados} for:item="chamado">
-                                <tr key={chamado.Id} class="linha-clicavel" data-id={chamado.Id} onclick={handleClickNaLinha}>
-                                    <td>{chamado.Name}</td>
+                                <tr key={chamado.Id} class={chamado.classeDaLinha}>
+                                    <td class="celula-clicavel" data-id={chamado.Id} onclick={handleClickNaLinha}>{chamado.Name}</td>
                                     <td>{chamado.nomeDoCliente}</td>
                                     <td>{chamado.Equipamento__r.Name}</td>
                                     <td>
@@ -50,6 +52,30 @@
                                         <span class={chamado.classeDaPrioridade}>{chamado.Prioridade__c}</span>
                                     </td>
                                     <td>{chamado.dataAberturaFormatada}</td>
+                                    <td>
+                                        <template if:true={chamado.slaVencido}>
+                                            <span class="slds-badge slds-theme_error">SLA Vencido</span>
+                                        </template>
+                                        <template if:false={chamado.slaVencido}>
+                                            <span class="slds-text-color_weak">{chamado.slaFormatado}</span>
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <template if:true={chamado.temAcaoDisponivel}>
+                                            <lightning-button-menu
+                                                alternative-text="Ações"
+                                                icon-name="utility:threedots_vertical"
+                                                data-id={chamado.Id}
+                                                data-proximo-status={chamado.proximoStatus}
+                                                onselect={handleSelecionarAcao}
+                                            >
+                                                <lightning-menu-item
+                                                    value={chamado.proximoStatus}
+                                                    label={chamado.rotuloDaAcao}
+                                                ></lightning-menu-item>
+                                            </lightning-button-menu>
+                                        </template>
+                                    </td>
                                 </tr>
                             </template>
                         </tbody>

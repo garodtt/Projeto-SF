@@ -1,0 +1,17 @@
+.linha-sla-vencido {
+    background-color: #fdeaea;
+}
+
+.linha-sla-vencido:hover {
+    background-color: #fbd9d9;
+}
+
+.celula-clicavel {
+    cursor: pointer;
+    color: #0176d3;
+    font-weight: 600;
+}
+
+.celula-clicavel:hover {
+    text-decoration: underline;
+}
